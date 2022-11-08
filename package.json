@@ -1,0 +1,36 @@
+{
+  "name": "sw-table",
+  "version": "0.1.0",
+  "license": "MIT",
+  "main": "dist/sw-table.common.js",
+  "description": "一个基于Vue的PC端虚拟表格组件，支持虚拟行与虚拟列以及大部分el-table相关的属性",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build --target lib ./src/index.js"
+  },
+  "dependencies": {
+    "core-js": "^3.8.3"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "vue-template-compiler": "^2.6.14"
+  },
+  "peerDependencies": {
+    "vue": "^2.6.14",
+    "lodash": "^4.17.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:BTIsBlue/sw-table.git"
+  },
+  "keywords": [
+    "sw-table",
+    "virtual table",
+    "vue table",
+    "virtual column"
+  ],
+  "bugs": {
+    "url": "https://github.com/BTIsBlue/sw-table/issues"
+  }
+}
