@@ -1,6 +1,6 @@
 {
   "name": "sw-table",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "main": "dist/sw-table.common.js",
   "description": "一个基于Vue的PC端虚拟表格组件，支持虚拟行与虚拟列以及大部分el-table相关的属性",

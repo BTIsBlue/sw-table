@@ -2,6 +2,75 @@
 
 Sw-Table是一个基于Vue的PC端表格组件，支持虚拟行/虚拟列以及大部分el-table相关属性
 
+## 安装
+
+```
+npm install sw-table
+```
+
+### 使用
+
+```javascript
+import Vue from 'vue'
+import SwTable from 'sw-table'
+import 'sw-table/dist/sw-table.css'
+
+Vue.use(SwTable)
+```
+
+## 示例
+
+注意：sw-table使用的属性是table-data而不是data
+
+```vue
+<template>
+    <sw-table :table-data="tableData">
+      <sw-table-column
+        prop="date"
+        label="日期"
+        width="180">
+      </sw-table-column>
+      <sw-table-column
+        prop="name"
+        label="姓名"
+        width="180">
+      </sw-table-column>
+      <sw-table-column
+        prop="address"
+        label="地址">
+      </sw-table-column>
+    </sw-table>
+  </template>
+
+  <script>
+    export default {
+      data() {
+        return {
+          tableData: [{
+            date: '2016-05-02',
+            name: '王小虎',
+            address: '上海市普陀区金沙江路 1518 弄'
+          }, {
+            date: '2016-05-04',
+            name: '王小虎',
+            address: '上海市普陀区金沙江路 1517 弄'
+          }, {
+            date: '2016-05-01',
+            name: '王小虎',
+            address: '上海市普陀区金沙江路 1519 弄'
+          }, {
+            date: '2016-05-03',
+            name: '王小虎',
+            address: '上海市普陀区金沙江路 1516 弄'
+          }]
+        }
+      }
+    }
+  </script>
+```
+
+## API
+
 ### Table Attributes
 
 | 参数                   | 说明                                                         | 类型                                                  | 可选值                         | 默认值                                                     |
