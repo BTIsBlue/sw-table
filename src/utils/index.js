@@ -1,3 +1,5 @@
+import typeHelp from './type.js'
+
 export const generateTblConfigs = (slots = [], renderTbl, option = {}, headerAcc = {}) => {
   const { r = 0, parent } = option
   const { c: parentC = 0, props: parentProps } = parent || {}
@@ -168,11 +170,26 @@ export const generateCellData = (tableData, config) => {
   return cellList
 }
 
-const getCellConfig = ([cellCs, rowCs], scopedData) => {
-  const ccs = cellCs ? (typeof cellCs === 'string' ? cellCs : cellCs(scopedData)): void 0
-  const rcs = rowCs ? (typeof rowCs === 'string' ? rowCs : rowCs(scopedData)): void 0
-  return [ccs, rcs]
+/**
+ * @description: 获取单元格style 配置
+ * @param { Object } param
+  * @argument { Array } data
+  * @argument { any } scopedData
+  * @argument { String } type 返回类型
+ * @return { Array | Object}
+  * Array: ['class', 'class2'] 
+  * Object: { color: 'red' }
+ */
+const getCellConfig = ({ data: [cellCs, rowCs], scopedData, type }) => {
+  const resolveConfig  = (data) => {
+    if (!data) return void 0
+    return typeHelp.isFunction(data) ? data(scopedData) : data
+  }
+  const ccs = resolveConfig(cellCs)
+  const rcs = resolveConfig(rowCs)
+  return type === 'string' ? [ccs, rcs] : {...ccs, ...rcs}
 }
+
 export const getCellStyle = ({ type, scopedData, rect }, options) => {
   const isBaseCell = type === 'base'
   const { scrollLeft, scrollTop, cellStyle, rowStyle, headerCellStyle, headerRowStyle } = options
@@ -181,7 +198,7 @@ export const getCellStyle = ({ type, scopedData, rect }, options) => {
   const transTop = top - (type !== 'header' ? scrollTop : 0)
 
   const [cellStyleOption, rowStyleOption] = isBaseCell ? [cellStyle, rowStyle] : [headerCellStyle, headerRowStyle]
-  const styleCell = getCellConfig([cellStyleOption, rowStyleOption], scopedData)
+  const styleCell = getCellConfig({ data: [cellStyleOption, rowStyleOption], scopedData, type: 'object'})
   return {
     ...styleCell,
     width: `${width}px`,
@@ -206,7 +223,7 @@ export const getCellClass = ({ type, scopedData, rect, classColumn }, options) =
   const classStripe = (stripe && isBaseCell && rowIndex % 2 === 1) ? `${classPrefix}--stripe` : void 0
   const classHover = (isBaseCell && hoverIdx === rowIndex) ? `${classPrefix}--hover` : void 0
   const [cellClassOption, rowClassOption] = isBaseCell ? [cellClassName, rowClassName] : [headerCellClassName, headerRowClass]
-  const classCell = getCellConfig([cellClassOption, rowClassOption], scopedData)
+  const classCell = getCellConfig({ data: [cellClassOption, rowClassOption], scopedData, type: 'string' })
   const classFixed = rect.fixed ? `${classPrefix}--fixed` : void 0
   const classHighlight = (isBaseCell && highlightCurrentRow && row === highlightRow) ?
     `${classPrefix}--highlight` : void 0

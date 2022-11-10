@@ -478,12 +478,13 @@ export default {
 .sw-table__fixed--col {
   width: 10px;
   top: 0;
-  box-shadow: 9px 1px 5px rgba(100, 100, 100, 0.3);
+  box-shadow: 5px 0 10px rgba(0, 0, 0, .12);
 }
 .sw-table__fixed--row {
   height: 10px;
   left: 0;
-  box-shadow: 1px 9px 5px rgba(100, 100, 100, 0.3);
+  
+  box-shadow: 0 5px 10px rgb(0 0 0 / 12%)
 }
 
 .sw-table__columns {
@@ -536,11 +537,12 @@ export default {
 }
 .sw-table__cell--base {
   z-index: 0;
-  background-color: white;
-  transition: background-color 0.15s linear;
 }
 .sw-table__cell--base.sw-table__cell--fixed {
   z-index: 1;
+}
+.sw-table__cell--header, .sw-table__cell--base {
+  transition: background-color 0.15s linear;
 }
 .sw-table__cell--stripe {
   background-color: #fafafa;
