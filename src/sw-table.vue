@@ -513,7 +513,7 @@ export default {
 .sw-table__cell {
   display: flex;
   box-sizing: border-box;
-  padding: 12px 10px;
+  padding: 0 10px;
   position: absolute;
   left: 0;
   top: 0;
@@ -542,6 +542,7 @@ export default {
   z-index: 1;
 }
 .sw-table__cell--header, .sw-table__cell--base {
+  background: #ffffff;
   transition: background-color 0.15s linear;
 }
 .sw-table__cell--stripe {
