@@ -53,7 +53,8 @@ export const generateTblConfigs = (slots = [], renderTbl, option = {}, headerAcc
     // 暂不支持多层header的fixed以及跨层级fixed
     Object.assign(columnConfig, {
       w: childColNum,
-      resizable: !cColumnAcc.length && resizable
+      resizable: !cColumnAcc.length && resizable,
+      hasChild: !!cColumnAcc.length
     })
     if (!cRowAcc) {
       columnAcc.push(columnConfig)
@@ -71,7 +72,7 @@ export const generateTblConfigs = (slots = [], renderTbl, option = {}, headerAcc
 }
 
 const generateHeader = (headerColumn, config) => {
-  const { scopedSlots, props, r, c, w, resizable } = headerColumn
+  const { scopedSlots, props, r, c, w, resizable, hasChild } = headerColumn
   const { baseConfig, colWidthConfig, rowHeight } = config
   const { headerRowNum, column } = baseConfig
   const columnNum = column.length
@@ -83,7 +84,7 @@ const generateHeader = (headerColumn, config) => {
   } else {
     width = colWidthConfig[c + w].colLeft - width
   }
-  const height = w > 1 ? rowHeight : (headerRowNum - r) * rowHeight
+  const height = hasChild ? rowHeight : (headerRowNum - r) * rowHeight
   const left = colWidthConfig[c].colLeft
   const top =  r * rowHeight
   const content = (scopedSlots && scopedSlots.header) || label

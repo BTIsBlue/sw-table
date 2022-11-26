@@ -138,7 +138,7 @@ export default {
     fixedStyle ({ tableWidth, tableHeight, scrollLeft, scrollTop, fixedLeft, baseConfig, rowHeight }) {
       const fixedArr = []
       if (scrollTop) {
-        const style =  { top: `${baseConfig.headerRowNum * rowHeight - 10}px`, width: `${tableWidth}px` }
+        const style = { top: `${baseConfig.headerRowNum * rowHeight - 10}px`, width: `${tableWidth}px` }
         fixedArr.push({ key: 'row', style })
       }
       if (scrollLeft && fixedLeft) {
@@ -192,12 +192,16 @@ export default {
         const { align, headerAlign } = column.props
         const textAlign = (type === 'header' ? headerAlign : void 0) || align
         return (<div
+          ref={ key }
           key={ key }
           data-type={ type }
           data-index={ index }
           data-row-index={ rowIndex }
           class={ classList }
           style={ cellStyle }
+          onClick={ this.handleClickCell }
+          onDblclick={ this.handleDblClickCell }
+          onContextmenu={ this.handleContextMenuCell }
           onMouseenter={ this.handleMouseEnter }
           onMouseleave={ this.handleMouseLeave }>
           <div style={{ textAlign }}>
@@ -291,16 +295,19 @@ export default {
       this.sort(eve.target.dataset || {})
     },
     handleMouseEnter (eve) {
-      const { type, rowIndex, index } = eve.target.dataset
-      if (type === 'header') return
+      const { type, rowIndex, index } = eve.currentTarget.dataset
+      const cell = this.cellData[index]
+      if (type === 'header' || !cell) return
+      eve.stopPropagation()
       this.hoverIdx = +rowIndex
       this.$emit('cell-mouse-enter', this.cellData[index].scopedData)
     },
     handleMouseLeave (eve) {
-      const { type, index } = eve.target.dataset
-      if (type === 'header') return
+      const cell = this.cellData[eve.currentTarget.dataset.index]
+      if (!cell) return
+      eve.stopPropagation()
       this.hoverIdx = void 0
-      this.$emit('cell-mouse-leave', this.cellData[index].scopedData)
+      this.$emit('cell-mouse-leave', cell.scopedData)
     },
     handleScroll (target) {
       const [scrollKey, scrollOffset] = target.dataset.key === 'scroller-x' ?
@@ -317,8 +324,8 @@ export default {
       e.preventDefault()
     },
     handleClickCell (eve) {
-      const { type, scopedData } = this.handleCellOperate(eve, 'click')
-      if (!this.highlightCurrentRow || type === 'header') return
+      const { type, scopedData } = this.handleCellOperate(eve, 'click') || {}
+      if (!this.highlightCurrentRow || type === 'header' || !scopedData) return
       this.setCurrentRow(scopedData.row)
     },
     handleDblClickCell (eve) {
@@ -326,23 +333,24 @@ export default {
     },
     handleContextMenuCell (eve) {
       this.handleCellOperate(eve, 'contextmenu')
-      return false
     },
     handleCellOperate (eve, eveName) {
-      const cell = this.cellData[eve.target.dataset.index] || {}
-      const { type, scopedData = {} } = cell
+      const cell = this.cellData[eve.currentTarget.dataset.index]
+      if (!cell) return
+      eve.stopPropagation()
+      const { key, type, scopedData = {} } = cell
       const isHeader = type === 'header'
       const events = isHeader ? [`header-${eveName}`] : [`cell-${eveName}`, `row-${eveName}`]
-      events.forEach((event) => this.$emit(event, scopedData))
+      events.forEach((event) => this.$emit(event, { eve, cellDom: this.$refs[key] }, scopedData))
       return cell
     },
     handleResize (eve) {
-      const colIdx = eve.target.dataset.columnIndex.split('-')[1]
+      const colIdx = eve.target.dataset.columnIndex
       const { colWidth, colLeft } = this.colWidthConfig[colIdx]
       const [maxLeft, minLeft, initPlus] = [Number.MAX_SAFE_INTEGER, colLeft + MIN_CELL_WIDTH, colWidth]
       const initLeft = colLeft + initPlus
       let resizeWidth = colWidth
-      this.resizeLine = (<div class="sw-table__line" style={{left: `${initLeft}px` }}></div>)
+      this.resizeLine = (<div class="sw-table__line" style={{ left: `${initLeft}px` }}></div>)
       const initX = parseInt(eve.clientX)
       const mouseMove = (me) => {
         const resizeLeft = Math.min(Math.max(parseInt(me.clientX) - initX + initLeft, minLeft), maxLeft)
@@ -367,7 +375,7 @@ export default {
       return (<div
         key="resizer"
         data-column-index={ columnIndex }
-        class={ ['sw-table__resizer' ] }
+        class={ ['sw-table__resizer'] }
         onMousedown={ this.handleResize }>
       </div>)
     },
@@ -417,20 +425,17 @@ export default {
       }[type]
     }
   },
-  mounted() {
+  mounted () {
     this.initListeners()
   },
-  render() {
+  render () {
     const { tableClass, tableStyle, renderCellList, resizeLine, renderScroller, renderFixed, $slots } = this
     const el = (
       <div class="sw-table" onWheel={ this.handleTblScroll }>
         <div
           key="table-body"
           class={ tableClass }
-          style={ tableStyle }
-          onClick={ this.handleClickCell }
-          onDoubleClick={ this.handleDblClickCell }
-          onContextMenu={ this.handleContextMenuCell }>
+          style={ tableStyle }>
           { renderCellList }
           { resizeLine }
         </div>
@@ -483,7 +488,6 @@ export default {
 .sw-table__fixed--row {
   height: 10px;
   left: 0;
-  
   box-shadow: 0 5px 10px rgb(0 0 0 / 12%)
 }
 
@@ -542,7 +546,7 @@ export default {
   z-index: 1;
 }
 .sw-table__cell--header, .sw-table__cell--base {
-  background: #ffffff;
+  background-color: #ffffff;
   transition: background-color 0.15s linear;
 }
 .sw-table__cell--stripe {
