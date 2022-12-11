@@ -347,14 +347,14 @@ export default {
     handleResize (eve) {
       const colIdx = eve.target.dataset.columnIndex
       const { colWidth, colLeft } = this.colWidthConfig[colIdx]
-      const [maxLeft, minLeft, initPlus] = [Number.MAX_SAFE_INTEGER, colLeft + MIN_CELL_WIDTH, colWidth]
-      const initLeft = colLeft + initPlus
+      const [maxLeft, minLeft, initPlus] = [Number.MAX_SAFE_INTEGER, colLeft + MIN_CELL_WIDTH - this.scrollLeft, colWidth]
+      const initLeft = colLeft + initPlus - this.scrollLeft
       let resizeWidth = colWidth
       this.resizeLine = (<div class="sw-table__line" style={{ left: `${initLeft}px` }}></div>)
       const initX = parseInt(eve.clientX)
       const mouseMove = (me) => {
         const resizeLeft = Math.min(Math.max(parseInt(me.clientX) - initX + initLeft, minLeft), maxLeft)
-        resizeWidth = resizeLeft - colLeft
+        resizeWidth = resizeLeft - colLeft + this.scrollLeft
         this.resizeLine = (<div class="sw-table__line" style={{ left: `${resizeLeft}px` }}></div>)
       }
       document.addEventListener('mousemove', mouseMove)
